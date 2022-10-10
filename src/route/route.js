@@ -1,7 +1,16 @@
 const express = require("express")
 const router = express.Router()
 const userController = require("../controller/userController");
-const {authentication,authorization} = require("../middleweres/auth")
+const {authentication,authorization} = require("../middleware/auth")
+
+
+
+
+
+
+
+
+
 router.post("/register", userController.createUser)
 // ================== Login Api ==================
 router.post("/login", userController.login)
