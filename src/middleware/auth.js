@@ -3,10 +3,11 @@ const userModel = require('../model/userModel')
 
 const authentication = async function(req,res,next){
    try {
-    let token = req.headers["Authorization"]
+    let token = req.headers["authorization"]
     if(!token) {return res.status(401).send({msg:"required token "}) }
-
-    jwt.verify(token,"Project-5-shoppingCart-group18"
+    let splittoken = token.split(' ') //converting into array
+        // decoding token  
+    jwt.verify(splittoken[1],"Project-5-shoppingCart-group18"
     ,(err,decoded)=>{
         if(err){
         return res

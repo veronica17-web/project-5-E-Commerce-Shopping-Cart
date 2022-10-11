@@ -167,16 +167,16 @@ const login = async (req, res) => {
         }
         const { email, password } = userDetails
         //  Email Validation 
-        if (!isValid(email)) {
+        if (validator.isValid(email)) {
             return res.status(400).send({ status: false, message: " Email Id Is required" })
         }
-        if (!validator.isEmail(email)) {
+        if (!validator.isValidEmail(email)) {
             return res.status(400).send({ status: false, message: " Email Id Is Not Valid" })
         }
         const isEmailExists = await userModel.findOne({ email: email })
         if (!isEmailExists) return res.status(401).send({ status: false, message: "Email is Incorrect" })
         //  Password Validation 
-        if (!validator.isValid(password)) {
+        if (validator.isValid(password)) {
             return res.status(400).send({ status: false, message: " Password Is required" })
         }
 
@@ -207,7 +207,7 @@ const login = async (req, res) => {
 const getUserProfile = async (req, res) => {
     try {
         let userId = req.params.userId
-        if (!isValidObjectId(userId)) {
+        if (!validator.isValidObjectId(userId)) {
             return res.status(400).send({ status: false, message: " Invalid userId" })
         }
         const userProfile = await userModel.findById(userId)
