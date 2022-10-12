@@ -180,9 +180,9 @@ const login = async (req, res) => {
             return res.status(400).send({ status: false, message: " Password Is required" })
         }
 
-        if (!validator.isValidPassword(password)) {
-            return res.status(400).send({ status: false, message: "Please provide a valid password ,Password should be of 8 - 15 characters", })
-        }
+        // if (!validator.isValidPassword(password)) {
+        //     return res.status(400).send({ status: false, message: "Please provide a valid password ,Password should be of 8 - 15 characters", })
+        // }
         const isPasswordMatch = await bcrypt.compare(password, isEmailExists.password)
         if (!isPasswordMatch) return res.status(401).send({ status: false, message: "Password is Incorrect" })
 
