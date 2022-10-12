@@ -3,6 +3,7 @@ const router = express.Router()
 const userController = require("../controller/userController");
 const {authentication,authorization} = require("../middleware/auth");
 const userModel = require("../model/userModel");
+const userController1 = require("../controller/project.js")
 
 
 router.post("/register", userController.createUser)
@@ -14,6 +15,10 @@ router.post("/login", userController.login)
 router.get("/user/:userId/profile", authentication, userController.getUserProfile)
 
 router.put("/user/:userId/profile",authentication, authorization, userController.updateUser)
+
+
+
+router.put("/products/:productId",authentication, authorization, userController1.updateProduct)
 
 router.all("/*",function(req,res){
     return res.status(404).send({status:false,message:"Url Not Found"})

@@ -37,5 +37,11 @@ const isValidString = (String) => {
 const isvalidCity = function (city){
     return /^[a-zA-z',.\s-]{1,25}$/.test(city)
   }
+  const isValidSize = (sizes) => {
+    return ['S', 'XS', 'M', 'X', 'L', 'XXL', 'XL'].includes(sizes);
+  }
+  const isValidPrice = (price) => {
+    return /^[1-9]\d{0,7}(?:\.\d{1,2})?$/.test(price);
+  }
   
-module.exports = {isValid,isValidBody,isValidPassword,isValidObjectId,isValidPincode,isValidPhone,isValidEmail,isvalidCity,isValidString}
+module.exports = {isValid,isValidBody,isValidPassword,isValidObjectId,isValidPrice,isValidSize,isValidPincode,isValidPhone,isValidEmail,isvalidCity,isValidString}
