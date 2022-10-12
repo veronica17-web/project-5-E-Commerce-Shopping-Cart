@@ -4,8 +4,8 @@ const productSchema = new mongoose.Schema({
     title: {type:String,required:true, unique:true, trim:true},
     description: {type:String, required:true, trim:true},
     price: {type:Number, required:true, trim:true },
-    currencyId: {type:String, mandatory,required:true, trim:true },
-    currencyFormat: {type:String, mandatory,required:true, trim:true},
+    currencyId: {type:String, required:true, trim:true },
+    currencyFormat: {type:String, required:true, trim:true},
     isFreeShipping: {type:Boolean, default: false},
     productImage: {type:String,required:true, trim:true},  // s3 link
     style: {type:String,trim:true},
