@@ -21,7 +21,7 @@ router.post("/products",productController.createProduct)
 
 
 router.put("/products/:productId", productController.updateProduct)
-
+router.get("/products/:productId", productController.getWithPath)
 
 router.delete( "/products/:productId",productController.deletebyId)
 // ======================== End =================================
