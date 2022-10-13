@@ -7,9 +7,11 @@ const productSchema = new mongoose.Schema({
 
     price: {type:Number, required:true, trim:true },
 
+
     currencyId: {type:String, required:true, trim:true },
 
     currencyFormat: {type:String,required:true, trim:true},
+
 
     isFreeShipping: {type:Boolean, default: false},
 

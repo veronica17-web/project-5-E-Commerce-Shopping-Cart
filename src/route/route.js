@@ -1,25 +1,30 @@
 const express = require("express")
 const router = express.Router()
 const userController = require("../controller/userController");
+const productController = require("../controller/productController");
 const {authentication,authorization} = require("../middleware/auth");
-const userModel = require("../model/userModel");
-const userController1 = require("../controller/project.js")
 
 
+// ================ Start User Controller Api's ====================
 router.post("/register", userController.createUser)
-// ================== Login Api ==================
-router.post("/login", userController.login)
 
-// ============== Get user Profile api=============
+router.post("/login", userController.login)
 
 router.get("/user/:userId/profile", authentication, userController.getUserProfile)
 
 router.put("/user/:userId/profile",authentication, authorization, userController.updateUser)
 
+// ================ Start Product Controller Api's ====================
+router.post("/products",productController.createProduct)
 
 
-router.put("/products/:productId",authentication, authorization, userController1.updateProduct)
 
+
+router.put("/products/:productId", productController.updateProduct)
+
+
+router.delete( "/products/:productId",productController.deletebyId)
+// ======================== End =================================
 router.all("/*",function(req,res){
     return res.status(404).send({status:false,message:"Url Not Found"})
 })

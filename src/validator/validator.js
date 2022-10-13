@@ -7,6 +7,16 @@ const isValid = (value) => {
   return false;
 }
 
+const isValid1 = function (value) {
+  if (typeof value === "undefined" || value === null) return false
+  if (typeof value === "string" && value.trim().length === 0) return false
+  return true
+}
+
+const isValidFiles = (files) => {
+  if (files && files.length > 0) return true
+}
+
 const isValidBody = (reqBody) => {
   return Object.keys(reqBody).length === 0;
 }
@@ -37,11 +47,11 @@ const isValidString = (String) => {
 const isvalidCity = function (city){
     return /^[a-zA-z',.\s-]{1,25}$/.test(city)
   }
-  const isValidSize = (sizes) => {
-    return ['S', 'XS', 'M', 'X', 'L', 'XXL', 'XL'].includes(sizes);
-  }
   const isValidPrice = (price) => {
     return /^[1-9]\d{0,7}(?:\.\d{1,2})?$/.test(price);
   }
-  
-module.exports = {isValid,isValidBody,isValidPassword,isValidObjectId,isValidPrice,isValidSize,isValidPincode,isValidPhone,isValidEmail,isvalidCity,isValidString}
+
+  const isValidSize = (sizes) => {
+    return ['S', 'XS', 'M', 'X', 'L', 'XXL', 'XL'].includes(sizes);
+  }
+module.exports = {isValidSize,isValidPrice,isValidFiles,isValid,isValidBody,isValidPassword,isValidObjectId,isValidPincode,isValidPhone,isValidEmail,isvalidCity,isValidString,isValid1}
