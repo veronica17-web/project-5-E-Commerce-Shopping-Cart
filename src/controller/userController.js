@@ -221,7 +221,25 @@ let updateUser = async function (req, res) {
 
         let { fname, lname, email, password, phone } = data;
 
-        
+        let arr  = ['fname','lname','email','password','phone']
+
+        for (keys in data) {
+
+            if (!arr.includes(keys)) {
+                return res.status(400).send({
+                    status: false,
+                    message: `filters must be among ${arr.join(", ")}`
+                })
+    
+            }
+            if (data[keys] === "") {
+                return res.status(400).send(
+                    {
+                        status: false,
+                        message: ` provide information about ${keys} `
+                    })
+            }
+        }
         //validationg the request body
         if (validator.isValidBody(data)) return res.status(400).send({ status: false, message: "Enter details to update your account data" });
 
