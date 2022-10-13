@@ -36,7 +36,10 @@ const isValidPhone = (Mobile) => {
 const isValidPincode = (num) => {
     return  /^[0-9]{6}$/.test(num);
    }
- 
+   const  checkImage = (img) => {
+    let imageRegex = /(jpeg|png|jpg)$/
+    return imageRegex.test(img)
+}
 const isValidObjectId = (objectId) => {
     return mongoose.isValidObjectId(objectId)
     
@@ -54,4 +57,4 @@ const isvalidCity = function (city){
   const isValidSize = (sizes) => {
     return ['S', 'XS', 'M', 'X', 'L', 'XXL', 'XL'].includes(sizes);
   }
-module.exports = {isValidSize,isValidPrice,isValidFiles,isValid,isValidBody,isValidPassword,isValidObjectId,isValidPincode,isValidPhone,isValidEmail,isvalidCity,isValidString,isValid1}
+module.exports = {isValidSize,isValidPrice,isValidFiles,isValid,checkImage,isValidBody,isValidPassword,isValidObjectId,isValidPincode,isValidPhone,isValidEmail,isvalidCity,isValidString,isValid1}

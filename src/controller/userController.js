@@ -9,11 +9,9 @@ const createUser = async (req, res) => {
     try {
         let data = req.body;
         let files = req.files;
-
         let { fname, lname, email, password, phone, address } = data;
 
         if (validator.isValidBody(data)) return res.status(400).send({ status: false, message: "Enter details to create your account" });
-
         //validating firstname
         if (!fname) return res.status(400).send({ status: false, message: "First name is required" });
 
@@ -32,18 +30,15 @@ const createUser = async (req, res) => {
         //validating lastname
         if (validator.isValidString(lname)) return res.status(400).send({ status: false, message: "Enter a valid Last name and should not contains numbers" });
 
-
         //checking for email-id
         if (!email) return res.status(400).send({ status: false, message: "User Email-id is required" });
 
         //validating user email-id
         if (!validator.isValidEmail(email.trim())) return res.status(400).send({ status: false, message: "Please Enter a valid Email-id" });
 
-
         //checking if email already exist or not
         let duplicateEmail = await userModel.findOne({ email: email })
         if (duplicateEmail) return res.status(400).send({ status: false, message: "Email already exist" })
-
 
         //checking for phone number
         if (!phone) return res.status(400).send({ status: false, message: "User Phone number is required" });
@@ -54,7 +49,6 @@ const createUser = async (req, res) => {
         //checking if phone already exist or not
         let duplicatePhone = await userModel.findOne({ phone: phone })
         if (duplicatePhone) return res.status(400).send({ status: false, message: "Phone already exist" })
-
 
         //checking for password
         if (!password) return res.status(400).send({ status: false, message: "Password is required" });
@@ -68,14 +62,11 @@ const createUser = async (req, res) => {
 
         data.address = JSON.parse(data.address);
 
-
         let { shipping, billing } = data.address;
         //validating the address 
         if (data.address && typeof data.address != "object") {
             return res.status(400).send({ status: false, message: "Address is in wrong format" })
         };
-
-
         if (shipping) {
             //validation for shipping address
             if (typeof shipping != "object") {
@@ -108,7 +99,6 @@ const createUser = async (req, res) => {
         } else {
             return res.status(400).send({ status: false, message: "Shipping address is required" })
         }
-
         //validation for billing address
         if (billing) {
             if (typeof billing !== "object") {
@@ -141,13 +131,15 @@ const createUser = async (req, res) => {
         } else {
             return res.status(400).send({ status: false, message: "billing address is required" })
         }
+          //checking for image link
+          if (files.length === 0) return res.status(400).send({ status: false, message: "ProfileImage is required" });
+
         //hashing password with bcrypt
         data.password = await bcrypt.hash(password, 10);
 
         //AWS
         let profileImgUrl = await aws.uploadFile(files[0]);
         data.profileImage = profileImgUrl;
-
 
         let responseData = await userModel.create(data);
         return res.status(201).send({ status: true, message: "User created successfully", data: responseData })
@@ -180,9 +172,9 @@ const login = async (req, res) => {
             return res.status(400).send({ status: false, message: " Password Is required" })
         }
 
-        // if (!validator.isValidPassword(password)) {
-        //     return res.status(400).send({ status: false, message: "Please provide a valid password ,Password should be of 8 - 15 characters", })
-        // }
+        if (!validator.isValidPassword(password)) {
+            return res.status(400).send({ status: false, message: "Please provide a valid password ,Password should be of 8 - 15 characters", })
+        }
         const isPasswordMatch = await bcrypt.compare(password, isEmailExists.password)
         if (!isPasswordMatch) return res.status(401).send({ status: false, message: "Password is Incorrect" })
 
@@ -228,6 +220,8 @@ let updateUser = async function (req, res) {
         let files = req.files;
 
         let { fname, lname, email, password, phone } = data;
+
+        
         //validationg the request body
         if (validator.isValidBody(data)) return res.status(400).send({ status: false, message: "Enter details to update your account data" });
 

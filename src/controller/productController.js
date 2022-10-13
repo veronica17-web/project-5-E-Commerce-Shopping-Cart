@@ -76,9 +76,10 @@ const createProduct = async (req, res) => {
                 return res.status(400).send({ status: false, message: "Installment must be an integer" })
         }
         //AWS
+        if (files && files.length > 0){
         let productImgUrl = await aws.uploadFile(files[0])
         productDetails.productImage = productImgUrl
-
+        }
         let productCreated = await productModel.create(productDetails);
         return res.status(201).send({ status: true, message: "Product created successfully", data: productCreated })
     } catch (error) {
@@ -86,6 +87,25 @@ const createProduct = async (req, res) => {
     }
 }
 
+
+//====================GET /products/:GET /products/:productId=========================================
+
+const getWithPath = async function (req, res) {
+    let id = req.params.productId
+    if (!validator.isValidObjectId(id)) {
+        return res.status(400).send({
+            status: false,
+            message: "Please provide valid Product Id"
+        })
+    }
+    let productDetails = await productModel.findOne({ _id: id, isDeleted:false})
+
+    if (!productDetails) {
+        return res.status(404).send({ status: false, message: "no product found" })
+    }
+    return res.status(200).send({ status: true, data: productDetails })
+
+}
 // ==================================== PUT product/:productId =============================================
 
 const updateProduct = async (req, res) => {
@@ -192,25 +212,6 @@ const deletebyId = async (req, res) => {
     }
 };
 
-const getWithPath = async function (req, res) {
-    let id = req.params.productId
-    if (!validator.isValidObjectId(id)) {
-        return res.status(400).send({
-            status: false,
-            message: "Please provide valid Product Id"
-        })
-    }
-    let productDetails = await productModel.findOne({ _id: id, isDeleted: false })
-
-    if (!productDetails) {
-        return res.status(404).send({ status: false, message: "no product found" })
-    }
-    return res.status(200).send({ status: true, data: productDetails })
-
-}
-
-
-
 const getproducts = async (req, res) => {
     try {
         let data = req.query
@@ -292,3 +293,5 @@ const getproducts = async (req, res) => {
 }
 
 module.exports = { createProduct, updateProduct, deletebyId, getproducts, getWithPath }
+
+
