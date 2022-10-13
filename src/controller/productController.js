@@ -191,5 +191,22 @@ const deletebyId = async (req, res) => {
         return res.status(500).send({ status: false, message: error.message })
     }
 };
+//====================GET /products/:GET /products/:productId=========================================
 
-module.exports = { createProduct, updateProduct, deletebyId }
+const getWithPath = async function (req, res) {
+    let id = req.params.productId
+    if (!validator.isValidObjectId(id)) {
+        return res.status(400).send({
+            status: false,
+            message: "Please provide valid Product Id"
+        })
+    }
+    let productDetails = await productModel.findOne({ _id: id, isDeleted:false})
+
+    if (!productDetails) {
+        return res.status(404).send({ status: false, message: "no product found" })
+    }
+    return res.status(200).send({ status: true, data: productDetails })
+
+}
+module.exports = { createProduct, updateProduct, deletebyId, getWithPath }
