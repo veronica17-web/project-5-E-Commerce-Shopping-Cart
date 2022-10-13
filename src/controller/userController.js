@@ -131,8 +131,8 @@ const createUser = async (req, res) => {
         } else {
             return res.status(400).send({ status: false, message: "billing address is required" })
         }
-          //checking for image link
-          if (files.length === 0) return res.status(400).send({ status: false, message: "ProfileImage is required" });
+        //checking for image link
+        if (files.length === 0) return res.status(400).send({ status: false, message: "ProfileImage is required" });
 
         //hashing password with bcrypt
         data.password = await bcrypt.hash(password, 10);
@@ -219,27 +219,29 @@ let updateUser = async function (req, res) {
         let data = req.body
         let files = req.files;
 
-        let { fname, lname, email, password, phone } = data;
-
-        let arr  = ['fname','lname','email','password','phone']
-
-        for (keys in data) {
-
-            if (!arr.includes(keys)) {
-                return res.status(400).send({
-                    status: false,
-                    message: `filters must be among ${arr.join(", ")}`
-                })
-    
-            }
-            if (data[keys] === "") {
-                return res.status(400).send(
-                    {
-                        status: false,
-                        message: ` provide information about ${keys} `
-                    })
-            }
+        let { fname, lname, email, password, phone, ...rest } = data;
+        if (rest) {
+            return res.status(400).send({ status: false, message: "Enter details to update your account data" });
         }
+        //let arr  = ['fname','lname','email','password','phone']
+
+        // for (keys in data) {
+
+        //     if (!arr.includes(keys)) {
+        //         return res.status(400).send({
+        //             status: false,
+        //             message: `filters must be among ${arr.join(", ")}`
+        //         })
+
+        //     }
+        //     if (data[keys] === "") {
+        //         return res.status(400).send(
+        //             {
+        //                 status: false,
+        //                 message: ` provide information about ${keys} `
+        //             })
+        //     }
+        // }
         //validationg the request body
         if (validator.isValidBody(data)) return res.status(400).send({ status: false, message: "Enter details to update your account data" });
 

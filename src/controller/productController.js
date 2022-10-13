@@ -87,7 +87,86 @@ const createProduct = async (req, res) => {
     }
 }
 
+//===============================================GET /products=============================================
+const getproducts = async (req, res) => {
+    try {
+        let data = req.query
+        let filter = { isDeleted: false }
 
+        if (data.size || data.size == "") {
+            if (!validator.isValid1(data.size)) {
+                return res.status(400).send({ status: false, message: "Enter some value in product size" })
+            }
+        }
+
+        if (data.size) {
+            let sizes = data.size.toUpperCase().split(",")
+            let enumSize = ["S", "XS", "M", "X", "L", "XXL", "XL"]
+            for (let i = 0; i < sizes.length; i++) {
+                if (!enumSize.includes(sizes[i])) {
+                    return res.status(400).send({ status: false, message: `Sizes should be ${enumSize} value (with multiple value please give saperated by comma)` })
+                }
+            }
+            filter.availableSizes = {}
+            filter.availableSizes["$in"] = sizes
+        }
+
+
+        if (data.name || data.name == "") {
+            if (!validator.isValid1(data.name)) {
+                return res.status(400).send({ status: false, message: "Enter some value in product name" })
+            }
+
+            filter.title = {}
+            filter.title["$regex"] = data.name
+            filter.title["$options"] = "i"
+        }
+
+        if (data.priceGreaterThan === "" || data.priceLessThan === "") {
+            return res.status(400).send({ status: false, message: "Price cant be empty" })
+        }
+
+        if (data.priceGreaterThan || data.priceLessThan) {
+            if (data.priceGreaterThan) {
+                if (!validator.isValidPrice(data.priceGreaterThan)) {
+                    return res.status(400).send({ status: false, message: "priceGreaterThan should be Number " })
+                }
+            }
+
+            if (data.priceLessThan) {
+                if (!validator.isValidPrice(data.priceLessThan)) {
+                    return res.status(400).send({ status: false, message: "priceLessThan should be Number " })
+                }
+            }
+
+            filter.price = {}
+            if (data.priceGreaterThan && data.priceLessThan) {
+                filter.price["$gt"] = data.priceGreaterThan
+                filter.price["$lt"] = data.priceLessThan
+            } else {
+                if (data.priceGreaterThan) filter.price["$gt"] = data.priceGreaterThan
+                if (data.priceLessThan) filter.price["$lt"] = data.priceLessThan
+            }
+        }
+
+        if (data.priceSort) {
+            if (!data.priceSort.match(/^(1|-1)$/)){
+                return res.status(400).send({ status: false, message: "priceSort must be 1 or -1" })
+            }
+        }
+
+        const getProduct = await productModel.find(filter).sort({ price: data.priceSort }) 
+
+        if (!getProduct.length) {
+            return res.status(404).send({ status: false, message: "Product not found" })
+        }
+
+        return res.status(200).send({ status: true, message: "Success", data: getProduct })
+
+    } catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+    }
+}
 //====================GET /products/:GET /products/:productId=========================================
 
 const getWithPath = async function (req, res) {
@@ -212,85 +291,6 @@ const deletebyId = async (req, res) => {
     }
 };
 
-const getproducts = async (req, res) => {
-    try {
-        let data = req.query
-        let filter = { isDeleted: false }
-
-        if (data.size || data.size == "") {
-            if (!validator.isValid1(data.size)) {
-                return res.status(400).send({ status: false, message: "Enter some value in product size" })
-            }
-        }
-
-        if (data.size) {
-            let sizes = data.size.toUpperCase().split(",")
-            let enumSize = ["S", "XS", "M", "X", "L", "XXL", "XL"]
-            for (let i = 0; i < sizes.length; i++) {
-                if (!enumSize.includes(sizes[i])) {
-                    return res.status(400).send({ status: false, message: `Sizes should be ${enumSize} value (with multiple value please give saperated by comma)` })
-                }
-            }
-            filter.availableSizes = {}
-            filter.availableSizes["$in"] = sizes
-        }
-
-
-        if (data.name || data.name == "") {
-            if (!validator.isValid1(data.name)) {
-                return res.status(400).send({ status: false, message: "Enter some value in product name" })
-            }
-
-            filter.title = {}
-            filter.title["$regex"] = data.name
-            filter.title["$options"] = "i"
-        }
-
-        if (data.priceGreaterThan === "" || data.priceLessThan === "") {
-            return res.status(400).send({ status: false, message: "Price cant be empty" })
-        }
-
-        if (data.priceGreaterThan || data.priceLessThan) {
-            if (data.priceGreaterThan) {
-                if (!validator.isValidPrice(data.priceGreaterThan)) {
-                    return res.status(400).send({ status: false, message: "priceGreaterThan should be Number " })
-                }
-            }
-
-            if (data.priceLessThan) {
-                if (!validator.isValidPrice(data.priceLessThan)) {
-                    return res.status(400).send({ status: false, message: "priceLessThan should be Number " })
-                }
-            }
-
-            filter.price = {}
-            if (data.priceGreaterThan && data.priceLessThan) {
-                filter.price["$gt"] = data.priceGreaterThan
-                filter.price["$lt"] = data.priceLessThan
-            } else {
-                if (data.priceGreaterThan) filter.price["$gt"] = data.priceGreaterThan
-                if (data.priceLessThan) filter.price["$lt"] = data.priceLessThan
-            }
-        }
-
-        if (data.priceSort) {
-            if (!data.priceSort.match(/^(1|-1)$/)){
-                return res.status(400).send({ status: false, message: "priceSort must be 1 or -1" })
-            }
-        }
-
-        const getProduct = await productModel.find(filter).sort({ price: data.priceSort }) 
-
-        if (!getProduct.length) {
-            return res.status(404).send({ status: false, message: "Product not found" })
-        }
-
-        return res.status(200).send({ status: true, message: "Success", data: getProduct })
-
-    } catch (error) {
-        return res.status(500).send({ status: false, message: error.message })
-    }
-}
 
 module.exports = { createProduct, updateProduct, deletebyId, getproducts, getWithPath }
 
