@@ -192,7 +192,40 @@ const deletebyId = async (req, res) => {
     }
 };
 
- 
+const getproducts = async (req,res)=>{
+       try {
+           let data = req.query
+           let filter = {isDeleted:false}
+
+           if(data.size || data.size == ""){
+            if(!validator.isValid1(data.name)){
+                return res.status(400).send({status:false, message:"Enter some value in product size"})
+            }
+           }
+        
+           if(data.size){
+            let size = data.size.toUpperCase().split(",")
+            let enumSize = ["S", "XS", "M", "X", "L", "XXL", "XL"]
+            for (let i = 0; i < array.length; i++) {
+                const element = array[i];
+                
+            }
+           }
+
+
+           if(data.name || data.name == ""){
+            if(!validator.isValid1(data.name)){
+                return res.status(400).send({status:false, message:"Enter some value in product name"})
+            }
+           }
+           filter.title = {}
+           filter.title["$regex"] = data.name
+
+
+       } catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+       }
+} 
 
 
 module.exports = { createProduct, updateProduct, deletebyId, getproducts }

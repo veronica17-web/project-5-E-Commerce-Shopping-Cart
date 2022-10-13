@@ -17,11 +17,19 @@ router.put("/user/:userId/profile",authentication, authorization, userController
 // ================ Start Product Controller Api's ====================
 router.post("/products",productController.createProduct)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> ee50bba00fedd8f5fd5b8e91a32840f24bcc9768
 router.put("/products/:productId", productController.updateProduct)
 
 router.delete( "/products/:productId",productController.deletebyId)
 
+<<<<<<< HEAD
 router.get("/products")
+=======
+router.get('/products/:productId',productController.getWithPath)
+>>>>>>> ee50bba00fedd8f5fd5b8e91a32840f24bcc9768
 // ======================== End =================================
 router.all("/*",function(req,res){
     return res.status(404).send({status:false,message:"Url Not Found"})
