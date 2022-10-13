@@ -211,5 +211,6 @@ const deletebyId = async (req, res) => {
         return res.status(500).send({ status: false, message: error.message })
     }
 };
+//====================GET /products/:GET /products/:productId=========================================
 
 module.exports = { createProduct, getWithPath,updateProduct, deletebyId }

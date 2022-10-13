@@ -18,12 +18,12 @@ router.put("/user/:userId/profile",authentication, authorization, userController
 router.post("/products",productController.createProduct)
 
 
-
-
 router.put("/products/:productId", productController.updateProduct)
 router.get("/products/:productId", productController.getWithPath)
 
 router.delete( "/products/:productId",productController.deletebyId)
+
+
 // ======================== End =================================
 router.all("/*",function(req,res){
     return res.status(404).send({status:false,message:"Url Not Found"})
