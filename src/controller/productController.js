@@ -192,4 +192,7 @@ const deletebyId = async (req, res) => {
     }
 };
 
-module.exports = { createProduct, updateProduct, deletebyId }
+ 
+
+
+module.exports = { createProduct, updateProduct, deletebyId, getproducts }
