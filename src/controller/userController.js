@@ -221,7 +221,7 @@ let updateUser = async function (req, res) {
 
         let { fname, lname, email, password, phone, ...rest } = data;
         if (rest) {
-            return res.status(400).send({ status: false, message: "Enter details to update your account data" });
+            return res.status(400).send({ status: false, message: "invalid request body " });
         }
         //let arr  = ['fname','lname','email','password','phone']
 
