@@ -41,7 +41,7 @@ const isValidPincode = (num) => {
     return imageRegex.test(img)
 }
 const isValidObjectId = (objectId) => {
-    return mongoose.isValidObjectId(objectId)
+    return mongoose.Types.ObjectId.isValid(objectId)
     
 }
 const isValidString = (String) => {

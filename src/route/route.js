@@ -3,6 +3,7 @@ const router = express.Router()
 const userController = require("../controller/userController");
 const productController = require("../controller/productController");
 const {authentication,authorization} = require("../middleware/auth");
+const cart = require("../controller/createCart")
 
 
 // ================ Start User Controller Api's ====================
@@ -29,6 +30,13 @@ router.get('/products/:productId',productController.getWithPath)
 router.delete( "/products/:productId",productController.deletebyId)
 
 // ======================== End =================================
+//======================= Cart Api's =============================
+
+router.post("/users/:userId/cart", cart.CreateCart )
+
+//======================== End ====================================
+
+
 router.all("/*",function(req,res){
     return res.status(404).send({status:false,message:"Url Not Found"})
 })
