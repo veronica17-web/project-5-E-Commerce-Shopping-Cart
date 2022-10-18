@@ -3,7 +3,7 @@ const router = express.Router()
 const userController = require("../controller/userController");
 const productController = require("../controller/productController");
 const {authentication,authorization} = require("../middleware/auth");
-const cart = require("../controller/createCart")
+const cartController = require("../controller/cartController")
 
 
 // ================ Start User Controller Api's ====================
@@ -20,7 +20,6 @@ router.post("/products",productController.createProduct)
 
 router.put("/products/:productId", productController.updateProduct)
 
-
 router.delete( "/products/:productId",productController.deletebyId)
 
 router.get("/products", productController.getproducts)
@@ -29,13 +28,18 @@ router.get('/products/:productId',productController.getWithPath)
 
 router.delete( "/products/:productId",productController.deletebyId)
 
-// ======================== End =================================
 //======================= Cart Api's =============================
 
-router.post("/users/:userId/cart", cart.CreateCart )
+router.post("/users/:userId/cart", cartController.CreateCart )
 
-router.put("/users/:userId/cart",cart.updateCart)
+router.put("/users/:userId/cart",cartController.updateCart)
 
+
+
+router.get("/users/:userId/cart",cartController.getCart)
+
+
+router.delete("/users/:userId/cart",cartController.deleteCart)
 //======================== End ====================================
 
 
