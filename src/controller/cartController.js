@@ -58,7 +58,7 @@ const CreateCart = async (req, res) => {
 
         if (checkCartPresent) {
             if (checkCartPresent._id.toString() !== cartId) {
-                return res.status(404).send({ status: false, message: "Cart Not found" })
+                return res.status(404).send({ status: false, message: "Cart Not found please enter valid Cart Id" })
             }
         }
         let array = checkCartPresent.items
@@ -154,7 +154,7 @@ const updateCart = async (req, res) => {
                 if (productIdInitems == productId) {
                     itemsarr.splice(i, 1)
                     let priceReduce = checkCart.totalPrice - (CheckProduct.price * quantity)
-                    checkCart.totalPrice = Number(priceReduce);
+                    checkCart.totalPrice = priceReduce;
                     let items = checkCart.totalItems
                     checkCart.totalItems = items - 1
                     await checkCart.save()
@@ -174,9 +174,9 @@ const updateCart = async (req, res) => {
                 if (productId == productIdInitems) {
                     if (quantity == 1) {
                        
-                        itemsarr.splice(i, 1)
+                        itemsarr.splice(i, 1) 
                         let priceReduce = checkCart.totalPrice - (CheckProduct.price * quantity)
-                        checkCart.totalPrice = Number(priceReduce);
+                        checkCart.totalPrice = priceReduce;
                         let items = checkCart.totalItems
                         checkCart.totalItems = items - 1
                         await checkCart.save();
@@ -186,7 +186,7 @@ const updateCart = async (req, res) => {
                     let priceReduce = checkCart.totalPrice - CheckProduct.price
                     let newquant = quantity - 1
                     itemsarr[i].quantity = newquant
-                    checkCart.totalPrice = Number(priceReduce)
+                    checkCart.totalPrice = priceReduce
                     await checkCart.save();
                     return res.status(200).send({ status: true, message: 'Success', data: checkCart })
                 }
@@ -229,9 +229,9 @@ const deleteCart = async (req, res) => {
         if (findCart.items.length == 0) {
             return res.status(400).send({ status: false, message: "Cart is already empty" });
         }
-        await cartModel.updateOne({ _id: findCart._id },
+      const deleteCart =  await cartModel.updateOne({ _id: findCart._id },
             { items: [], totalPrice: 0, totalItems: 0 });
-        return res.status(204).send({ status: false, message: "Deleted Sucessfully" });
+        return res.status(204).send({ status: false, message: "Deleted Sucessfully"});
 
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message });

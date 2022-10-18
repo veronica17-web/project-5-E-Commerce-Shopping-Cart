@@ -219,66 +219,57 @@ let updateUser = async function (req, res) {
         let data = req.body
         let files = req.files;
 
-        let { fname, lname, email, password, phone, ...rest } = data;
-        if (rest) {
-            return res.status(400).send({ status: false, message: "invalid request body " });
+        if (!validator.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "User Id Invalid" })
+
+        const checkuser = await userModel.findById(userId)
+        if (!checkuser) {
+            return res.status(404).send({ status: false, message: "User Not Found" })
         }
-        //let arr  = ['fname','lname','email','password','phone']
 
-        // for (keys in data) {
-
-        //     if (!arr.includes(keys)) {
-        //         return res.status(400).send({
-        //             status: false,
-        //             message: `filters must be among ${arr.join(", ")}`
-        //         })
-
-        //     }
-        //     if (data[keys] === "") {
-        //         return res.status(400).send(
-        //             {
-        //                 status: false,
-        //                 message: ` provide information about ${keys} `
-        //             })
-        //     }
-        // }
-        //validationg the request body
         if (validator.isValidBody(data)) return res.status(400).send({ status: false, message: "Enter details to update your account data" });
-
-        if (typeof fname == 'string') {
-            //checking for firstname
-            if (validator.isValid(fname)) return res.status(400).send({ status: false, message: "First name should not be an empty string" });
-
-            //validating firstname
-            if (validator.isValidString(fname)) return res.status(400).send({ status: false, message: "Enter a valid First name and should not contains numbers" });
+        
+        if(files == []){
+            if (files.length == 0) {
+                return res.status(400).send({ status: false, message: "Put your image for update the image" });
+            }
         }
-        if (typeof lname == 'string') {
+       
+
+        if (typeof data.fname == 'string') {
             //checking for firstname
-            if (validator.isValid(lname)) return res.status(400).send({ status: false, message: "Last name should not be an empty string" });
+            if (validator.isValid(data.fname)) return res.status(400).send({ status: false, message: "First name should not be an empty string" });
 
             //validating firstname
-            if (validator.isValidString(lname)) return res.status(400).send({ status: false, message: "Enter a valid Last name and should not contains numbers" });
+            if (validator.isValidString(data.fname)) return res.status(400).send({ status: false, message: "Enter a valid First name and should not contains numbers" });
+        }
+        if (typeof data.lname == 'string') {
+            //checking for firstname
+            if (validator.isValid(data.lname)) return res.status(400).send({ status: false, message: "Last name should not be an empty string" });
+
+            //validating firstname
+            if (validator.isValidString(data.lname)) return res.status(400).send({ status: false, message: "Enter a valid Last name and should not contains numbers" });
         }
         //validating user email-id
-        if (data.email && (!validator.isValidEmail(email))) return res.status(400).send({ status: false, message: "Please Enter a valid Email-id" });
-
-        //checking if email already exist or not
-        let duplicateEmail = await userModel.findOne({ email: email })
+        if (data.email) {
+            if (!validator.isValidEmail(data.email)) return res.status(400).send({ status: false, message: "Please Enter a valid Email-id" });
+        }
+        let duplicateEmail = await userModel.findOne({ email: data.email })
         if (duplicateEmail) return res.status(400).send({ status: false, message: "Email already exist" });
+        //checking if email already exist or not
 
         //validating user phone number
-        if (data.phone && (!validator.isValidPhone(phone))) return res.status(400).send({ status: false, message: "Please Enter a valid Phone number" });
+        if (data.phone && (!validator.isValidPhone(data.phone))) return res.status(400).send({ status: false, message: "Please Enter a valid Phone number" });
 
         //checking if email already exist or not
-        let duplicatePhone = await userModel.findOne({ phone: phone })
+        let duplicatePhone = await userModel.findOne({ phone: data.phone })
         if (duplicatePhone) return res.status(400).send({ status: false, message: "Phone already exist" })
 
-        if (data.password || typeof password == 'string') {
+        if (data.password || typeof data.password == 'string') {
             //validating user password
-            if (!validator.isValidPassword(password)) return res.status(400).send({ status: false, message: "Password should be between 8 and 15 character" });
+            if (!validator.isValidPassword(data.password)) return res.status(400).send({ status: false, message: "Password should be between 8 and 15 character" });
 
             //hashing password with bcrypt
-            data.password = await bcrypt.hash(password, 10);
+            data.password = await bcrypt.hash(data.password, 10);
         }
         //aws
         if (files && files.length != 0) {
