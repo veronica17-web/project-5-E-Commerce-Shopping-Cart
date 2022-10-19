@@ -14,7 +14,7 @@ router.post("/login", userController.login)
 
 router.get("/user/:userId/profile", authentication, userController.getUserProfile)
 
-router.put("/user/:userId/profile",authentication, authorization, userController.updateUser)
+router.put("/user/:userId/profile", userController.updateUser)
 
 // ================ Start Product Controller Api's ====================
 router.post("/products",productController.createProduct)

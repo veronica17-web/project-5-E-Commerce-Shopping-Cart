@@ -220,75 +220,78 @@ let updateUser = async function (req, res) {
         let files = req.files;
 
         if (!validator.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "User Id Invalid" })
-
+           
         const checkuser = await userModel.findById(userId)
         if (!checkuser) {
             return res.status(404).send({ status: false, message: "User Not Found" })
         }
+        let {fname, lname, email, password, address, phone, ...rest} = data
 
-        if (validator.isValidBody(data)) return res.status(400).send({ status: false, message: "Enter details to update your account data" });
+        if (!validator.isValidBody(rest)){
+            return res.status(400).send({ status: false, message:  "InValid  Body Request" });
+       } 
         
-        if(files == []){
-            if (files.length == 0) {
-                return res.status(400).send({ status: false, message: "Put your image for update the image" });
+        if(!(files && !validator.isValidBody(data)) ){
+            if(!validator.isValidBody(data)){
+                return res.status(400).send({ status: false, message: "Enter details to update your account data" });
             }
         }
        
 
-        if (typeof data.fname == 'string') {
+        if (typeof fname == 'string') {
             //checking for firstname
-            if (validator.isValid(data.fname)) return res.status(400).send({ status: false, message: "First name should not be an empty string" });
+            if (validator.isValid(fname)) return res.status(400).send({ status: false, message: "First name should not be an empty string" });
 
             //validating firstname
-            if (validator.isValidString(data.fname)) return res.status(400).send({ status: false, message: "Enter a valid First name and should not contains numbers" });
+            if (validator.isValidString(fname)) return res.status(400).send({ status: false, message: "Enter a valid First name and should not contains numbers" });
         }
-        if (typeof data.lname == 'string') {
+        if (typeof lname == 'string') {
             //checking for firstname
-            if (validator.isValid(data.lname)) return res.status(400).send({ status: false, message: "Last name should not be an empty string" });
+            if (validator.isValid(lname)) return res.status(400).send({ status: false, message: "Last name should not be an empty string" });
 
             //validating firstname
-            if (validator.isValidString(data.lname)) return res.status(400).send({ status: false, message: "Enter a valid Last name and should not contains numbers" });
+            if (validator.isValidString(lname)) return res.status(400).send({ status: false, message: "Enter a valid Last name and should not contains numbers" });
         }
         //validating user email-id
-        if (data.email) {
-            if (!validator.isValidEmail(data.email)) return res.status(400).send({ status: false, message: "Please Enter a valid Email-id" });
+        if (email) {
+            if (!validator.isValidEmail(email)) return res.status(400).send({ status: false, message: "Please Enter a valid Email-id" });
         }
-        let duplicateEmail = await userModel.findOne({ email: data.email })
+        let duplicateEmail = await userModel.findOne({ email:email })
         if (duplicateEmail) return res.status(400).send({ status: false, message: "Email already exist" });
         //checking if email already exist or not
 
         //validating user phone number
-        if (data.phone && (!validator.isValidPhone(data.phone))) return res.status(400).send({ status: false, message: "Please Enter a valid Phone number" });
+        if (phone && (!validator.isValidPhone(phone))) return res.status(400).send({ status: false, message: "Please Enter a valid Phone number" });
 
         //checking if email already exist or not
-        let duplicatePhone = await userModel.findOne({ phone: data.phone })
+        let duplicatePhone = await userModel.findOne({ phone:phone })
         if (duplicatePhone) return res.status(400).send({ status: false, message: "Phone already exist" })
 
-        if (data.password || typeof data.password == 'string') {
+        if (password || typeof password == 'string') {
             //validating user password
-            if (!validator.isValidPassword(data.password)) return res.status(400).send({ status: false, message: "Password should be between 8 and 15 character" });
+            if (!validator.isValidPassword(password)) return res.status(400).send({ status: false, message: "Password should be between 8 and 15 character" });
 
             //hashing password with bcrypt
-            data.password = await bcrypt.hash(data.password, 10);
+            data.password = await bcrypt.hash(password, 10);
         }
         //aws
         if (files && files.length != 0) {
             let profileImgUrl = await aws.uploadFile(files[0]);
             data.profileImage = profileImgUrl;
         }
-        if (data.address === "") {
+        if (address === "") {
             return res.status(400).send({ status: false, message: "Please enter a valid address" })
-        } else if (data.address) {
+        } else if (address) {
 
-            if (validator.isValid(data.address)) {
+            if (validator.isValid(address)) {
                 return res.status(400).send({ status: false, message: "Please provide address field" });
             }
-            data.address = JSON.parse(data.address);
+            address = JSON.parse(address);
 
-            if (typeof data.address !== "object") {
+            if (typeof address !== "object") {
                 return res.status(400).send({ status: false, message: "address should be an object" });
             }
-            let { shipping, billing } = data.address
+            let { shipping, billing } = address
 
             if (shipping) {
                 if (typeof shipping != "object") {

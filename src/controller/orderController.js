@@ -16,12 +16,12 @@ const createOrder = async (req, res) => {
             return res.status(400).send({ status: false, message: "Provide some data inside the body " })
         }
         // status validation Start
-        if (!validator.isValid1(status)) {
-            return res.status(400).send({ status: false, message: "status is required" })
+        if (status) {
+            if (!validator.isValidStatus(status)) {
+                return res.status(400).send({ status: false, message: "Status  must be among pending, completed, cancelled" })
+            }
         }
-        if (!validator.isValidStatus(status)) {
-            return res.status(400).send({ status: false, message: "Status  must be among pending, completed, cancelled" })
-        }
+
         //end status validation
         //cancellable validation Start
         if (cancellable) {
@@ -85,7 +85,7 @@ const createOrder = async (req, res) => {
 
 const updateOrder = async (req, res) => {
     try {
-let requestBody = req.body
+        let requestBody = req.body
         let userId = req.params.userId
 
         const { orderId, status } = requestBody
@@ -101,7 +101,7 @@ let requestBody = req.body
             return res.status(400).send({ status: false, message: "Status  must be among pending, completed, cancelled" })
         }
         //end status validation
-    
+
         // User Validation
         if (!validator.isValidObjectId(userId)) {
             return res.status(400).send({ status: false, message: "userId not valid" })
@@ -118,15 +118,15 @@ let requestBody = req.body
         if (!validator.isValidObjectId(orderId)) {
             return res.status(400).send({ status: false, message: "order Id not valid" })
         }
-         const checkOrder = await orderModel.findOne({_id:orderId,userId:userId,cancellable:true,isDeleted:false})
-         if(!checkOrder){
-            return res.status(404).send({status:false, message:"Order Not Found"})
-         }
-         const orderUpdated = await orderModel.findByIdAndUpdate({_id:orderId},{$set:{status:status}},{new:true})
-         const Orders = { ...orderUpdated.toObject() }
-         delete Orders.__v
-         delete Orders.isDeleted
-         return res.status(201).send({ status: true, message: "success", data: Orders })
+        const checkOrder = await orderModel.findOne({ _id: orderId, userId: userId, cancellable: true, isDeleted: false })
+        if (!checkOrder) {
+            return res.status(404).send({ status: false, message: "Order Not Found" })
+        }
+        const orderUpdated = await orderModel.findByIdAndUpdate({ _id: orderId }, { $set: { status: status } }, { new: true })
+        const Orders = { ...orderUpdated.toObject() }
+        delete Orders.__v
+        delete Orders.isDeleted
+        return res.status(201).send({ status: true, message: "success", data: Orders })
 
 
     } catch (error) {
