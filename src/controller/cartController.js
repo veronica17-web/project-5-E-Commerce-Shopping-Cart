@@ -229,7 +229,7 @@ const deleteCart = async (req, res) => {
         if (findCart.items.length == 0) {
             return res.status(400).send({ status: false, message: "Cart is already empty" });
         }
-      const deleteCart =  await cartModel.updateOne({ _id: findCart._id },
+       await cartModel.updateOne({ _id: findCart._id },
             { items: [], totalPrice: 0, totalItems: 0 });
         return res.status(204).send({ status: false, message: "Deleted Sucessfully"});
 
