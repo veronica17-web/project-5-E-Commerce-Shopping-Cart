@@ -24,12 +24,12 @@ const createOrder = async (req, res) => {
         }
         //end status validation
         //cancellable validation Start
-        if(cancellable){
+        if (cancellable) {
             if (!/true|false/.test(cancellable)) {
                 return res.status(400).send({ status: false, message: "cancellable must be a boolean value True False" })
             }
         }
-        
+
         // User Validation
         if (!validator.isValidObjectId(userId)) {
             return res.status(400).send({ status: false, message: "userId not valid" })
@@ -51,30 +51,32 @@ const createOrder = async (req, res) => {
         //End Cart Validation
         let arrItem = checkCartPresent.items
 
-        if(arrItem.length == 0){
-            return res.status(400).send({status:false,message: "Cart Is empty"})
+        if (arrItem.length == 0) {
+            return res.status(400).send({ status: false, message: "Cart Is empty" })
         }
 
         let totalQuantity = 0
-        for(let i of arrItem ){      
+        for (let i of arrItem) {
             totalQuantity = totalQuantity + i.quantity
         }
-        
+
         let order = {
             userId: userId,
             items: arrItem,
             totalPrice: checkCartPresent.totalPrice,
             totalItems: checkCartPresent.totalItems,
             totalQuantity: totalQuantity,
-            cancellable:cancellable ,
+            cancellable: cancellable,
             status: status,
         }
 
-         const orderCreated = await orderModel.create(order)
-         const Orders = {...orderCreated.toObject()}
-         delete Orders.__v
-         delete Orders.isDeleted
-         return res.status(201).send({status:true,message:"success",data:Orders})
+        const orderCreated = await orderModel.create(order)
+        await cartModel.updateOne({ _id: checkCartPresent._id },
+            { items: [], totalPrice: 0, totalItems: 0 });
+        const Orders = { ...orderCreated.toObject() }
+        delete Orders.__v
+        delete Orders.isDeleted
+        return res.status(201).send({ status: true, message: "success", data: Orders })
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message })
     }
