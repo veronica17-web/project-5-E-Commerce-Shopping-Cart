@@ -74,6 +74,7 @@ const createOrder = async (req, res) => {
          const Orders = {...orderCreated.toObject()}
          delete Orders.__v
          delete Orders.isDeleted
+         
          return res.status(201).send({status:true,message:"success",data:Orders})
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message })
