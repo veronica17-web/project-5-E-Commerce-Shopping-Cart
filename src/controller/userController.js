@@ -138,8 +138,12 @@ const createUser = async (req, res) => {
         data.password = await bcrypt.hash(password, 10);
 
         //AWS
-        let profileImgUrl = await aws.uploadFile(files[0]);
-        data.profileImage = profileImgUrl;
+        if (files && files.length !== 0) {
+            if (!isValidimage(files[0].originalname)) return res.status(400).send({ status: false, message: "File format is not valid" });
+
+            let profileImgUrl = await aws.uploadFile(files[0]);
+            data.profileImage = profileImgUrl;
+        }
 
         let responseData = await userModel.create(data);
         return res.status(201).send({ status: true, message: "User created successfully", data: responseData })
@@ -220,23 +224,23 @@ let updateUser = async function (req, res) {
         let files = req.files;
 
         if (!validator.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "User Id Invalid" })
-           
+
         const checkuser = await userModel.findById(userId)
         if (!checkuser) {
             return res.status(404).send({ status: false, message: "User Not Found" })
         }
-        let {fname, lname, email, password, address, phone, ...rest} = data
+        let { fname, lname, email, password, address, phone, ...rest } = data
 
-        if (!validator.isValidBody(rest)){
-            return res.status(400).send({ status: false, message:  "InValid  Body Request" });
-       } 
-        
-        if(!(files && !validator.isValidBody(data)) ){
-            if(!validator.isValidBody(data)){
+        if (!validator.isValidBody(rest)) {
+            return res.status(400).send({ status: false, message: "InValid  Body Request" });
+        }
+
+        if (!(files && !validator.isValidBody(data))) {
+            if (!validator.isValidBody(data)) {
                 return res.status(400).send({ status: false, message: "Enter details to update your account data" });
             }
         }
-       
+
 
         if (typeof fname == 'string') {
             //checking for firstname
@@ -256,7 +260,7 @@ let updateUser = async function (req, res) {
         if (email) {
             if (!validator.isValidEmail(email)) return res.status(400).send({ status: false, message: "Please Enter a valid Email-id" });
         }
-        let duplicateEmail = await userModel.findOne({ email:email })
+        let duplicateEmail = await userModel.findOne({ email: email })
         if (duplicateEmail) return res.status(400).send({ status: false, message: "Email already exist" });
         //checking if email already exist or not
 
@@ -264,7 +268,7 @@ let updateUser = async function (req, res) {
         if (phone && (!validator.isValidPhone(phone))) return res.status(400).send({ status: false, message: "Please Enter a valid Phone number" });
 
         //checking if email already exist or not
-        let duplicatePhone = await userModel.findOne({ phone:phone })
+        let duplicatePhone = await userModel.findOne({ phone: phone })
         if (duplicatePhone) return res.status(400).send({ status: false, message: "Phone already exist" })
 
         if (password || typeof password == 'string') {
@@ -275,7 +279,8 @@ let updateUser = async function (req, res) {
             data.password = await bcrypt.hash(password, 10);
         }
         //aws
-        if (files && files.length != 0) {
+        if (files && files.length !== 0) {
+            if (!isValidimage(files[0].originalname)) return res.status(400).send({ status: false, message: "File format is not valid" });
             let profileImgUrl = await aws.uploadFile(files[0]);
             data.profileImage = profileImgUrl;
         }

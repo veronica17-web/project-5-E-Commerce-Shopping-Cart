@@ -60,4 +60,9 @@ const isvalidCity = function (city){
   const isValidStatus = (status)=>{
     return ["pending", "completed", "cancelled"].includes(status)
   }
-module.exports = {isValidStatus,isValidSize,isValidPrice,isValidFiles,isValid,checkImage,isValidBody,isValidPassword,isValidObjectId,isValidPincode,isValidPhone,isValidEmail,isvalidCity,isValidString,isValid1}
+  const isValidimage = (value) => {
+    let imageRegex = /(\/*\.(?:png|gif|webp|jpeg|jpg))/;
+    if (imageRegex.test(value))
+        return true;
+}
+module.exports = {isValidimage,isValidStatus,isValidSize,isValidPrice,isValidFiles,isValid,checkImage,isValidBody,isValidPassword,isValidObjectId,isValidPincode,isValidPhone,isValidEmail,isvalidCity,isValidString,isValid1}
