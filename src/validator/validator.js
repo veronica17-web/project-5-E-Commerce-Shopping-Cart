@@ -57,4 +57,7 @@ const isvalidCity = function (city){
   const isValidSize = (sizes) => {
     return ['S', 'XS', 'M', 'X', 'L', 'XXL', 'XL'].includes(sizes);
   }
-module.exports = {isValidSize,isValidPrice,isValidFiles,isValid,checkImage,isValidBody,isValidPassword,isValidObjectId,isValidPincode,isValidPhone,isValidEmail,isvalidCity,isValidString,isValid1}
+  const isValidStatus = (status)=>{
+    return ["pending", "completed", "cancelled"].includes(status)
+  }
+module.exports = {isValidStatus,isValidSize,isValidPrice,isValidFiles,isValid,checkImage,isValidBody,isValidPassword,isValidObjectId,isValidPincode,isValidPhone,isValidEmail,isvalidCity,isValidString,isValid1}

@@ -4,6 +4,7 @@ const userController = require("../controller/userController");
 const productController = require("../controller/productController");
 const {authentication,authorization} = require("../middleware/auth");
 const cartController = require("../controller/cartController")
+const orderController = require("../controller/orderController")
 
 
 // ================ Start User Controller Api's ====================
@@ -38,8 +39,13 @@ router.get("/users/:userId/cart", authentication, authorization, cartController.
 
 router.delete("/users/:userId/cart", authentication, authorization, cartController.deleteCart)
 //======================== End ====================================
+//======================= Order Api's =============================
 
+router.post("/users/:userId/orders",orderController.createOrder)
 
+router.put("/users/:userId/orders",orderController.updateOrder)
+
+//======================== End ====================================
 router.all("/*",function(req,res){
     return res.status(404).send({status:false,message:"Url Not Found"})
 })
