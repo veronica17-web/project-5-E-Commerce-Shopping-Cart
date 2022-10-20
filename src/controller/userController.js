@@ -139,7 +139,7 @@ const createUser = async (req, res) => {
 
         //AWS
         if (files && files.length !== 0) {
-            if (!isValidimage(files[0].originalname)) return res.status(400).send({ status: false, message: "File format is not valid" });
+            if (!validator.isValidimage(files[0].originalname)) return res.status(400).send({ status: false, message: "File format is not valid" });
 
             let profileImgUrl = await aws.uploadFile(files[0]);
             data.profileImage = profileImgUrl;
@@ -211,7 +211,7 @@ const getUserProfile = async (req, res) => {
         if (!userProfile) {
             return res.status(404).send({ status: false, message: "User Profile Not Found" })
         }
-        res.status(200).send({ status: true, data: userProfile })
+        res.status(200).send({ status: true,message:"success", data: userProfile })
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message })
     }
@@ -222,13 +222,7 @@ let updateUser = async function (req, res) {
         let userId = req.params.userId
         let data = req.body
         let files = req.files;
-
-        if (!validator.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "User Id Invalid" })
-
-        const checkuser = await userModel.findById(userId)
-        if (!checkuser) {
-            return res.status(404).send({ status: false, message: "User Not Found" })
-        }
+        
         let { fname, lname, email, password, address, phone, ...rest } = data
 
         if (!validator.isValidBody(rest)) {
@@ -240,8 +234,6 @@ let updateUser = async function (req, res) {
                 return res.status(400).send({ status: false, message: "Enter details to update your account data" });
             }
         }
-
-
         if (typeof fname == 'string') {
             //checking for firstname
             if (validator.isValid(fname)) return res.status(400).send({ status: false, message: "First name should not be an empty string" });
@@ -352,6 +344,7 @@ let updateUser = async function (req, res) {
             } else {
                 return res.status(400).send({ status: false, message: "Billing address is required" })
             }
+            data.address = address
         }
         let userData = await userModel.findOneAndUpdate({ _id: userId }, data, { new: true })
         if (!userData) { return res.status(404).send({ satus: false, message: "no user found to update" }) }

@@ -14,13 +14,7 @@ const CreateCart = async (req, res) => {
             return res.status(400).send({ status: false, message: "Provide some data inside the body " })
         }
 
-        if (!validator.isValidObjectId(userId)) {
-            return res.status(400).send({ status: false, message: "userId not valid" })
-        }
-        const user = await userModel.findById(userId)
-        if (!user) {
-            return res.status(404).send({ status: false, message: "user Not Found" })
-        }
+        
         if (cartId) {
             if (!validator.isValid1(cartId)) {
                 return res.status(400).send({ status: false, message: "cartId is required" })
@@ -103,14 +97,7 @@ const updateCart = async (req, res) => {
             return res.status(400).send({ status: false, message: "Provide some data inside the body " })
         }
 
-        if (!validator.isValidObjectId(userId)) {
-            return res.status(400).send({ status: false, message: "userId not valid" })
-        }
-        const user = await userModel.findById(userId)
-        if (!user) {
-            return res.status(404).send({ status: false, message: "user Not Found" })
-        }
-
+        
         if (!validator.isValid1(cartId)) {
             return res.status(400).send({ status: false, message: "cartId is required" })
         }
@@ -201,15 +188,8 @@ const updateCart = async (req, res) => {
 }
 //===================================================================================
 const getCart = async (req, res) => {
-  
         try {
             let userId = req.params.userId
-            if (!validator.isValidObjectId(userId))
-                return res.status(400).send({ status: false, message: "Invalid userId ID" })
-    
-            let validUser = await userModel.findOne({ _id: userId })
-            if (!validUser) return res.status(404).send({ status: false, message: "User does not exists" })
-    
             let validCart = await cartModel.findOne({ userId: userId }).select({ "items._id": 0, __v: 0 })
             if (!validCart) return res.status(404).send({ status: false, message: "No cart found" })
             return res.status(200).send({ status: true, message: 'Success', data: validCart })

@@ -1,6 +1,5 @@
 const validator = require("../validator/validator")
 const cartModel = require("../model/cartModel")
-const productModel = require("../model/productModel")
 const userModel = require("../model/userModel")
 const orderModel = require("../model/orderModel")
 
@@ -29,16 +28,6 @@ const createOrder = async (req, res) => {
                 return res.status(400).send({ status: false, message: "cancellable must be a boolean value True False" })
             }
         }
-
-        // User Validation
-        if (!validator.isValidObjectId(userId)) {
-            return res.status(400).send({ status: false, message: "userId not valid" })
-        }
-        const user = await userModel.findById(userId)
-        if (!user) {
-            return res.status(404).send({ status: false, message: "user Not Found" })
-        }
-        /// End user Validation
         // Cart Validation start
         if (!validator.isValid1(cartId)) {
             return res.status(400).send({ status: false, message: "cartId is required" })
@@ -76,7 +65,7 @@ const createOrder = async (req, res) => {
         const Orders = { ...orderCreated.toObject() }
         delete Orders.__v
         delete Orders.isDeleted
-        return res.status(201).send({ status: true, message: "success", data: Orders })
+        return res.status(201).send({ status: true, message: "Success", data: Orders })
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message })
     }
@@ -101,22 +90,16 @@ const updateOrder = async (req, res) => {
             return res.status(400).send({ status: false, message: "Status  must be among pending, completed, cancelled" })
         }
         //end status validation
-
-        // User Validation
-        if (!validator.isValidObjectId(userId)) {
-            return res.status(400).send({ status: false, message: "userId not valid" })
-        }
-        const user = await userModel.findById(userId)
-        if (!user) {
-            return res.status(404).send({ status: false, message: "user Not Found" })
-        }
-        /// End user Validation
         // Cart Validation start
         if (!validator.isValid1(orderId)) {
             return res.status(400).send({ status: false, message: "order id is required" })
         }
         if (!validator.isValidObjectId(orderId)) {
             return res.status(400).send({ status: false, message: "order Id not valid" })
+        }
+        const checkCart = await cartModel.findOne({userId:userId})
+        if(!checkCart){
+            return res.status(404).send({status:false, message:"cart not Found"})
         }
         const checkOrder = await orderModel.findOne({ _id: orderId, userId: userId, cancellable: true, isDeleted: false })
         if (!checkOrder) {
@@ -126,7 +109,7 @@ const updateOrder = async (req, res) => {
         const Orders = { ...orderUpdated.toObject() }
         delete Orders.__v
         delete Orders.isDeleted
-        return res.status(201).send({ status: true, message: "success", data: Orders })
+        return res.status(200).send({ status: true, message: "Success", data: Orders })
 
 
     } catch (error) {

@@ -14,7 +14,7 @@ router.post("/login", userController.login)
 
 router.get("/user/:userId/profile", authentication, userController.getUserProfile)
 
-router.put("/user/:userId/profile", userController.updateUser)
+router.put("/user/:userId/profile", authentication, authorization, userController.updateUser)
 
 // ================ Start Product Controller Api's ====================
 router.post("/products",productController.createProduct)
@@ -31,9 +31,9 @@ router.delete( "/products/:productId",productController.deletebyId)
 
 //======================= Cart Api's =============================
 
-router.post("/users/:userId/cart", cartController.CreateCart )
+router.post("/users/:userId/cart", authentication, authorization, cartController.CreateCart )
 
-router.put("/users/:userId/cart",cartController.updateCart)
+router.put("/users/:userId/cart", authentication, authorization, cartController.updateCart)
 
 router.get("/users/:userId/cart", authentication, authorization, cartController.getCart)
 
@@ -41,9 +41,9 @@ router.delete("/users/:userId/cart", authentication, authorization, cartControll
 //======================== End ====================================
 //======================= Order Api's =============================
 
-router.post("/users/:userId/orders",orderController.createOrder)
+router.post("/users/:userId/orders", authentication, authorization, orderController.createOrder)
 
-router.put("/users/:userId/orders",orderController.updateOrder)
+router.put("/users/:userId/orders", authentication, authorization, orderController.updateOrder)
 
 //======================== End ====================================
 router.all("/*",function(req,res){

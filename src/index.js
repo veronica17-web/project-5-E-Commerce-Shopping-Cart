@@ -1,16 +1,13 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const route = require('./route/route');
 const  mongoose  = require('mongoose');
 const app = express(); 
 
 const multer= require("multer");
 
-
 app.use( multer().any())
 
-
-app.use(bodyParser.json());
+app.use(express.json());
 
 mongoose.connect("mongodb+srv://jitendra7999:Kunal8602@cluster0.2quthrr.mongodb.net/group18Database", {
     useNewUrlParser: true

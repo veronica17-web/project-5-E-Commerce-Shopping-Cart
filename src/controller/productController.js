@@ -13,7 +13,10 @@ const createProduct = async (req, res) => {
         if (!validator.isValidFiles(files)) {
             return res.status(400).send({ status: false, message: "productImage is required" })
         }
-        const { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments } = productDetails
+        const { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments, ...rest } = productDetails
+        if (!validator.isValidBody(rest)) {
+            return res.status(400).send({ status: false, message: "InValid  Body Request" });
+        }
         //    title validation
         if (!validator.isValid1(title)) {
             return res.status(400).send({ status: false, message: "title is required" })
@@ -81,7 +84,7 @@ const createProduct = async (req, res) => {
         productDetails.productImage = productImgUrl
         }
         let productCreated = await productModel.create(productDetails);
-        return res.status(201).send({ status: true, message: "Product created successfully", data: productCreated })
+        return res.status(201).send({ status: true, message: "Success", data: productCreated })
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message })
     }
@@ -149,7 +152,7 @@ const getproducts = async (req, res) => {
             }
         }
 
-        if (data.priceSort) {
+        if (data.priceSort || data.priceSort == "") {
             if (!data.priceSort.match(/^(1|-1)$/)){
                 return res.status(400).send({ status: false, message: "priceSort must be 1 or -1" })
             }
@@ -170,19 +173,24 @@ const getproducts = async (req, res) => {
 //====================GET /products/:GET /products/:productId=========================================
 
 const getWithPath = async function (req, res) {
-    let id = req.params.productId
-    if (!validator.isValidObjectId(id)) {
-        return res.status(400).send({
-            status: false,
-            message: "Please provide valid Product Id"
-        })
+    try {
+        let id = req.params.productId
+        if (!validator.isValidObjectId(id)) {
+            return res.status(400).send({
+                status: false,
+                message: "Please provide valid Product Id"
+            })
+        }
+        let productDetails = await productModel.findOne({ _id: id, isDeleted:false})
+    
+        if (!productDetails) {
+            return res.status(404).send({ status: false, message: "no product found" })
+        }
+        return res.status(200).send({ status: true,message:"Success", data: productDetails })
+    } catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
     }
-    let productDetails = await productModel.findOne({ _id: id, isDeleted:false})
-
-    if (!productDetails) {
-        return res.status(404).send({ status: false, message: "no product found" })
-    }
-    return res.status(200).send({ status: true, data: productDetails })
+   
 
 }
 // ==================================== PUT product/:productId =============================================
@@ -198,6 +206,11 @@ const updateProduct = async (req, res) => {
 
         let data = req.body;
         let files = req.files;
+
+        const { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments, ...rest } = data
+        if (!validator.isValidBody(rest)) {
+            return res.status(400).send({ status: false, message: "InValid  Body Request" });
+        }
         // file validation
         if (validator.isValidBody(data)) return res.status(400).send({ status: false, message: "Body cannot be empty " })
         //checking for product image
@@ -207,64 +220,57 @@ const updateProduct = async (req, res) => {
             data.productImage = productImgUrl;
         }
         // title validation
-        if (data.title || data.title == "string") {
-            if (validator.isValid(data.title)) { return res.status(400).send({ status: false, message: "title should not be empty String" }) }
+        if (title || title == "string") {
+            if (validator.isValid(title)) { return res.status(400).send({ status: false, message: "title should not be empty String" }) }
             //Check the title for duplicate
-            let duplicateTitle = await productModel.findOne({ title: data.title })
+            let duplicateTitle = await productModel.findOne({ title:title })
             if (duplicateTitle) { return res.status(400).send({ status: false, message: "title is already present in database" }) }
         }
         // Description validation
-        if (data.description || data.description == "string") {
-            if (validator.isValid(data.description)) { return res.status(400).send({ status: false, message: "Description should not be empty String" }) }
+        if (description || description == "string") {
+            if (validator.isValid(description)) { return res.status(400).send({ status: false, message: "Description should not be empty String" }) }
         }
         // price validation
         // value shouldnt be empty--- validation
-        if (data.price || data.price == "string") {
-            if (!(validator.isValidString(data.price) && validator.isValidPrice(data.price))) return res.status(400).send({ status: false, message: "Price of product should be valid and in numbers" });
+        if (price || price == "string") {
+            if (!(validator.isValidString(price) && validator.isValidPrice(price))) return res.status(400).send({ status: false, message: "Price of product should be valid and in numbers" });
         }
         //currency validation
-        if (data.currencyId || typeof data.currencyId == 'string') {
+        if (currencyId || typeof currencyId == 'string') {
             //checking for currencyId 
-            if (validator.isValid(data.currencyId)) return res.status(400).send({ status: false, message: "Currency Id of product should not be empty" });
+            if (validator.isValid(currencyId)) return res.status(400).send({ status: false, message: "Currency Id of product should not be empty" });
 
-            if (!(/INR/.test(data.currencyId))) return res.status(400).send({ status: false, message: "Currency Id of product should be in uppercase 'INR' format" });
+            if (!(/INR/.test(currencyId))) return res.status(400).send({ status: false, message: "Currency Id of product should be in uppercase 'INR' format" });
         }
 
-        if (data.currencyFormat || typeof data.currencyFormat == 'string') {
+        if (currencyFormat || typeof currencyFormat == 'string') {
             //checking for currency formate
-            if (validator.isValid(data.currencyFormat)) return res.status(400).send({ status: false, message: "Currency format of product should not be empty" });
+            if (validator.isValid(currencyFormat)) return res.status(400).send({ status: false, message: "Currency format of product should not be empty" });
 
-            if (!(/₹/.test(data.currencyFormat))) return res.status(400).send({ status: false, message: "Currency format of product should be in '₹' " });
+            if (!(/₹/.test(currencyFormat))) return res.status(400).send({ status: false, message: "Currency format of product should be in '₹' " });
         }
         //free shipping validation
-        if (data.isFreeShipping || typeof data.isFreeShipping == 'string') {
-            if (validator.isValid(data.isFreeShipping)) return res.status(400).send({ status: false, message: "isFreeShipping should not contain white spaces" });
-            //if the user given any whitespace
-            data.isFreeShipping = data.isFreeShipping.toLowerCase().trim();//trim the whitespaces
-            if (data.isFreeShipping == 'true' || data.isFreeShipping == 'false') {
-                //convert from string to boolean
-                data.isFreeShipping = JSON.parse(data.isFreeShipping);
-            } else {
-                return res.status(400).send({ status: false, message: "Please enter either 'true' or 'false'" })
-            }
+        if (isFreeShipping || isFreeShipping == "") {
+            if (!(/^(true|false)$/).test(isFreeShipping))
+                return res.status(400).send({ status: false, message: "Freeshipping must be in Boolean (true or false)" })
         }
         //style validation
-        if (data.style || typeof data.style == 'string') {
-            if (validator.isValid(data.style)) return res.status(400).send({ status: false, message: "Style should be valid an does not contain numbers" });
-            if (validator.isValidString(data.style)) return res.status(400).send({ status: false, message: "Style should be valid an does not contain numbers" });
+        if (style || typeof style == 'string') {
+            if (validator.isValid(style)) return res.status(400).send({ status: false, message: "Style should be valid an does not contain numbers" });
+            if (validator.isValidString(style)) return res.status(400).send({ status: false, message: "Style should be valid an does not contain numbers" });
         }
         //availablesizes validation
-        if (data.availableSizes || typeof data.availableSizes == 'string') {
+        if (availableSizes || typeof availableSizes == 'string') {
             //checking for available Sizes of the products
-            let size = data.availableSizes.toUpperCase().split(",") //creating an array
+            let size = availableSizes.toUpperCase().split(",") //creating an array
             data.availableSizes = size;
 
-            for (let i = 0; i < data.availableSizes.length; i++) {
-                if (!validator.isValidSize(data.availableSizes[i])) { return res.status(400).send({ status: false, message: "Sizes should one of these - 'S', 'XS', 'M', 'X', 'L', 'XXL' and 'XL'" }) }
+            for (let i = 0; i < size.length; i++) {
+                if (!validator.isValidSize(size[i])) { return res.status(400).send({ status: false, message: "Sizes should one of these - 'S', 'XS', 'M', 'X', 'L', 'XXL' and 'XL'" }) }
             }
         }
-        if (data.installments || typeof data.installments == 'string') {
-            if (!validator.isValidString(data.installments)) return res.status(400).send({ status: false, message: "Installments should be in numbers and valid" });
+        if (installments || typeof installments == 'string') {
+            if (!validator.isValidString(installments)) return res.status(400).send({ status: false, message: "Installments should be in numbers and valid" });
         }
         let updatedProduct = await productModel.findByIdAndUpdate({ _id: productId }, data, { new: true })
         return res.status(200).send({ status: true, message: "Product updated successfully", data: updatedProduct })
